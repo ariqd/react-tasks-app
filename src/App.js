@@ -83,7 +83,7 @@ function App() {
     <Container>
       <Logo>
         <img src={logo} alt="logo" />
-        <h3>Task List</h3>
+        <h3>Task List with Redux</h3>
       </Logo>
       <div className="list">
         {todos.map((todo) => (
