@@ -4,22 +4,12 @@ import logo from "./logo.svg";
 import TodoItem from "./components/TodoItem";
 import FormInput from "./components/FormInput";
 import EditModal from "./components/EditModal";
+import { useSelector, useDispatch } from "react-redux";
+import { Add, Delete, Update } from "./store/actions/TaskAction";
 
 function App() {
-  const [todos, setTodos] = useState([
-    {
-      id: 1,
-      title: "Membaca buku",
-    },
-    {
-      id: 2,
-      title: "Menulis novel",
-    },
-    {
-      id: 3,
-      title: "Belanja online",
-    },
-  ]);
+  const todos = useSelector((state) => state.tasks.todos);
+  const dispatch = useDispatch();
 
   const [isEdit, setIsEdit] = useState(false);
 
@@ -29,18 +19,11 @@ function App() {
   });
 
   const deleteTask = (id) => {
-    setTodos(todos.filter((item) => item.id !== id));
+    dispatch(Delete(id));
   };
 
   const addTask = (data) => {
-    const id = todos.length;
-
-    const newData = {
-      id: id + 1,
-      title: data,
-    };
-
-    setTodos([...todos, newData]);
+    dispatch(Add(data));
   };
 
   const editTask = (e) => {
@@ -48,23 +31,13 @@ function App() {
   };
 
   const updateTask = () => {
-    const { id, title } = editData;
-
-    const newData = { id, title };
-
-    const newTodos = todos;
-
-    newTodos.splice(id - 1, 1, newData);
-
-    setTodos(newTodos);
+    dispatch(Update(editData));
     setIsEdit(false);
     setEditData({
       id: "",
       title: "",
     });
   };
-
-  // const toggleIsEdit = () => setIsEdit(!isEdit);
 
   const openEditModal = (id, data) => {
     setIsEdit(true);
