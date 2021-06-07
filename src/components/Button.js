@@ -1,14 +1,18 @@
 import styled from "styled-components";
 import PropTypes from "prop-types";
 
-const Button = ({ text, variant, action }) => {
-  return <Btn className={variant} onClick={action}>{text}</Btn>;
+const Button = ({ text, variant, action, isLoading }) => {
+  return (
+    <Btn className={variant} onClick={action}>
+      {isLoading ? "Loading..." : text}
+    </Btn>
+  );
 };
 
 Button.propTypes = {
   text: PropTypes.string.isRequired,
   variant: PropTypes.string.isRequired,
-  action: PropTypes.func.isRequired
+  action: PropTypes.func.isRequired,
 };
 
 export default Button;
