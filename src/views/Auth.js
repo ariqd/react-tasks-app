@@ -1,9 +1,9 @@
-import axios from "axios";
 import { useState } from "react";
+import { useHistory } from "react-router-dom";
+import axios from "axios";
 import styled from "styled-components";
 import Button from "../components/Button";
 import Input from "../components/Input";
-import { useHistory } from "react-router-dom";
 
 const baseUrl = "https://api-nodejs-todolist.herokuapp.com";
 
@@ -19,6 +19,7 @@ const Auth = () => {
 
   const submitLogin = async () => {
     setIsLoading(true);
+    setIsError(false);
 
     const user = {
       email,
@@ -27,6 +28,37 @@ const Auth = () => {
 
     try {
       const res = await axios.post(`${baseUrl}/user/login`, user);
+
+      localStorage.setItem("token", res.data.token);
+
+      setEmail("");
+      setPassword("");
+      setIsError({});
+      setError(false);
+      setIsLoading(false);
+
+      history.push("/tasks");
+    } catch (err) {
+      setIsError(true);
+      setError(err.response);
+      setIsLoading(false);
+      setPassword("");
+    }
+  };
+
+  const submitRegister = async () => {
+    setIsLoading(true);
+    setIsError(false)
+
+    const user = {
+      name,
+      email,
+      password,
+      age: 20,
+    };
+
+    try {
+      const res = await axios.post(`${baseUrl}/user/register`, user);
 
       localStorage.setItem("token", res.data.token);
 
@@ -46,8 +78,6 @@ const Auth = () => {
     }
   };
 
-  const submitRegister = () => console.log("Register");
-
   return (
     <AuthContainer>
       <h3>{login ? "Login" : "Register"}</h3>
@@ -56,17 +86,20 @@ const Auth = () => {
           <Input
             type="text"
             placeholder="Name"
+            value={name}
             onChange={(e) => setName(e.target.value)}
           />
         )}
         <Input
           type="email"
           placeholder="Email"
+          value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
         <Input
           type="password"
           placeholder="Password"
+          value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
       </div>
