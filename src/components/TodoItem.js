@@ -5,17 +5,17 @@ import Button from "./Button";
 const TodoItem = ({ todo, deleteTask, toggleIsEdit }) => {
   return (
     <Todo>
-      <p>{todo.title}</p>
+      <p>{todo.description}</p>
       <div>
         <Button
           text="Edit"
           variant="success"
-          action={() => toggleIsEdit(todo.id, todo.title)}
+          action={() => toggleIsEdit(todo._id, todo.description)}
         />
         <Button
           text="Delete"
           variant="warning"
-          action={() => deleteTask(todo.id)}
+          action={() => deleteTask(todo._id)}
         />
       </div>
     </Todo>

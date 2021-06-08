@@ -1,14 +1,19 @@
-import { useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useState, useContext } from "react";
+// import { useHistory } from "react-router-dom";
+// import { Redirect } from "react-router-dom";
 import axios from "axios";
 import styled from "styled-components";
+import { AuthContext } from "../context/auth";
 import Button from "../components/Button";
 import Input from "../components/Input";
+import { Redirect } from "react-router";
 
 const baseUrl = "https://api-nodejs-todolist.herokuapp.com";
 
 const Auth = () => {
-  const history = useHistory();
+  const { isAuthenticated, loginSuccess, loginFailed } =
+    useContext(AuthContext);
+  // const history = useHistory();
   const [login, setLogin] = useState(true);
   const [error, setError] = useState({});
   const [isError, setIsError] = useState(false);
@@ -28,27 +33,31 @@ const Auth = () => {
 
     try {
       const res = await axios.post(`${baseUrl}/user/login`, user);
+      console.log(res);
 
       localStorage.setItem("token", res.data.token);
 
       setEmail("");
       setPassword("");
-      setIsError({});
-      setError(false);
+      setIsError(false);
+      setError({});
       setIsLoading(false);
 
-      history.push("/tasks");
+      // history.push("/tasks");
+      loginSuccess();
     } catch (err) {
       setIsError(true);
       setError(err.response);
       setIsLoading(false);
       setPassword("");
+
+      loginFailed();
     }
   };
 
   const submitRegister = async () => {
     setIsLoading(true);
-    setIsError(false)
+    setIsError(false);
 
     const user = {
       name,
@@ -60,23 +69,31 @@ const Auth = () => {
     try {
       const res = await axios.post(`${baseUrl}/user/register`, user);
 
+      // console.log(res)
       localStorage.setItem("token", res.data.token);
 
       setName("");
       setEmail("");
       setPassword("");
-      setIsError({});
-      setError(false);
+      setIsError(false);
+      setError({});
       setIsLoading(false);
 
-      history.push("/tasks");
+      // history.push("/tasks");
+      loginSuccess();
     } catch (err) {
       setIsError(true);
       setError(err.response);
       setIsLoading(false);
       setPassword("");
+
+      loginFailed();
     }
   };
+
+  if (isAuthenticated) {
+    return <Redirect to="/tasks" />;
+  }
 
   return (
     <AuthContainer>

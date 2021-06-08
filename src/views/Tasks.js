@@ -1,32 +1,57 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import logo from "../logo.svg";
 import TodoItem from "../components/TodoItem";
 import FormInput from "../components/FormInput";
 import EditModal from "../components/EditModal";
+// import { AuthContext } from "../context/auth";
+// import { Redirect } from "react-router-dom";
+import axios from "axios";
+
+const baseUrl = "https://api-nodejs-todolist.herokuapp.com";
 
 function App() {
-  const [todos, setTodos] = useState([
-    {
-      id: 1,
-      title: "Membaca buku",
-    },
-    {
-      id: 2,
-      title: "Menulis novel",
-    },
-    {
-      id: 3,
-      title: "Belanja online",
-    },
-  ]);
+  // const { isAuthenticated } = useContext(AuthContext);
 
+  // const [todos, setTodos] = useState([
+  //   {
+  //     id: 1,
+  //     title: "Membaca buku",
+  //   },
+  //   {
+  //     id: 2,
+  //     title: "Menulis novel",
+  //   },
+  //   {
+  //     id: 3,
+  //     title: "Belanja online",
+  //   },
+  // ]);
+
+  useEffect(() => {
+    getData();
+  }, []);
+
+  const [todos, setTodos] = useState([]);
   const [isEdit, setIsEdit] = useState(false);
-
   const [editData, setEditData] = useState({
     id: "",
     title: "",
   });
+
+  const getData = async () => {
+    const token = localStorage.getItem("token");
+    const res = await axios.get(`${baseUrl}/task`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    setTodos(res.data.data);
+
+    console.log(res);
+  };
 
   const deleteTask = (id) => {
     setTodos(todos.filter((item) => item.id !== id));
@@ -64,8 +89,6 @@ function App() {
     });
   };
 
-  // const toggleIsEdit = () => setIsEdit(!isEdit);
-
   const openEditModal = (id, data) => {
     setIsEdit(true);
 
@@ -75,9 +98,11 @@ function App() {
     });
   };
 
-  const closeEditModal = () => {
-    setIsEdit(false);
-  };
+  const closeEditModal = () => setIsEdit(false);
+
+  // if (!isAuthenticated) {
+  //   return <Redirect to="/" />;
+  // }
 
   return (
     <Container>
@@ -86,14 +111,16 @@ function App() {
         <h3>Task List</h3>
       </Logo>
       <div className="list">
-        {todos.map((todo) => (
-          <TodoItem
-            key={todo.id}
-            todo={todo}
-            deleteTask={deleteTask}
-            toggleIsEdit={openEditModal}
-          />
-        ))}
+        {todos.length > 0
+          ? todos.map((todo) => (
+              <TodoItem
+                key={todo._id}
+                todo={todo}
+                deleteTask={deleteTask}
+                toggleIsEdit={openEditModal}
+              />
+            ))
+          : "No data"}
       </div>
       <div className="formInput">
         <FormInput addTask={addTask} />
